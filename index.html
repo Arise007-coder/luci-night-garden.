@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luci's Magical Night Garden ✨</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Animated Starfield Background Canvas -->
+    <canvas id="starfield"></canvas>
+
+    <!-- Ambient Audio Element -->
+    <audio id="bg-music" loop>
+        <source src="assets/audio/background-music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Top Navigation Bar / Audio Toggle -->
+    <header class="glass-header">
+        <div class="brand">🌸 Luci's Birthday Garden</div>
+        <div class="header-controls">
+            <button id="music-toggle" class="glass-btn icon-btn" title="Toggle Ambient Music">🎵 <span id="music-status">Play Music</span></button>
+        </div>
+    </header>
+
+    <!-- Main Container / Multi-Step Garden Tour -->
+    <main class="container">
+        
+        <!-- STEP 1: Welcome & Companion Selector -->
+        <section class="garden-section active" id="step-1">
+            <div class="glass-card welcome-card">
+                <div class="badge">A Little Birthday Fairytale</div>
+                <h1>Luci's Birthday Garden</h1>
+                
+                <!-- Interactive Archery Teaser Widget -->
+                <div class="archery-preview-container" id="archery-trigger-box">
+                    <div class="floating-heart" id="target-heart">❤️</div>
+                    <div class="bow-container">🏹</div>
+                </div>
+
+                <p class="subtitle">A little magic, just for you ✨</p>
+                <p class="intro-text">Tonight...<br>A little garden is waiting...<br>Made especially for you, Luci.</p>
+                
+                <!-- Companion Selector -->
+                <div class="companion-selector">
+                    <p class="companion-label">🐧 Choose your birthday companion mood:</p>
+                    <div class="companion-options">
+                        <img src="assets/images/penguin-birthday.jpg" alt="Birthday Penguin" class="companion-thumb active" data-mood="birthday">
+                        <img src="assets/images/penguin-funny.jpg" alt="Funny Penguin" class="companion-thumb" data-mood="funny">
+                        <img src="assets/images/penguin-gift.jpg" alt="Gift Penguin" class="companion-thumb" data-mood="gift">
+                        <img src="assets/images/penguin-simple.jpg" alt="Simple Penguin" class="companion-thumb" data-mood="simple">
+                    </div>
+                </div>
+
+                <button class="glass-btn primary-btn" onclick="nextStep(2)">
+                    <img src="assets/images/pudgy-penguin.gif" alt="Pudgy Penguin" class="btn-gif"> Start the Magic ✨
+                </button>
+                <small class="hint-text">Best experienced with a little sound, if you like.</small>
+            </div>
+        </section>
+
+        <!-- STEP 2: Cupid's Archery Mini-Game -->
+        <section class="garden-section" id="step-2">
+            <div class="glass-card game-card">
+                <h2>🏹 Cupid's Archery</h2>
+                <p>Pull back the bow and shoot an arrow straight into the heart to unlock your first birthday wish!</p>
+                
+                <div class="game-arena" id="archery-arena">
+                    <div class="target-heart-node" id="game-target">💖</div>
+                    <div class="arrow-shooter" id="shooter-bow">🏹</div>
+                </div>
+                <div class="game-controls">
+                    <button class="glass-btn primary-btn" id="shoot-btn">Shoot Arrow 🎯</button>
+                </div>
+                <div id="wish-reveal-box" class="hidden-wish">
+                    <p class="wish-text">"All our long years are your touch, and all our dreams are yours." ✨</p>
+                    <button class="glass-btn secondary-btn" onclick="nextStep(3)">Continue to the Heart Tree 🌳</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 3: Enchanted Heart Tree -->
+        <section class="garden-section" id="step-3">
+            <div class="glass-card tree-card">
+                <h2>🌳 The Enchanted Heart Tree</h2>
+                <p>Tap repeatedly to grow and bloom the tree of memories!</p>
+                
+                <div class="canvas-wrapper">
+                    <canvas id="heart-tree-canvas" width="350" height="350"></canvas>
+                </div>
+
+                <div class="tree-stats">
+                    <span>Growth Level: <strong id="growth-counter">0</strong> / 10</span>
+                </div>
+
+                <div class="action-row">
+                    <button class="glass-btn primary-btn" id="grow-tree-btn">Tap to Grow 🌱</button>
+                    <button class="glass-btn secondary-btn" id="proceed-gallery" disabled onclick="nextStep(4)">Enter Galleries 📸</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 4: Voice Notes & Galleries -->
+        <section class="garden-section" id="step-4">
+            <div class="glass-card gallery-card">
+                <h2>🎙️ Voice Notes & Memories</h2>
+                <p>Listen to special voice recordings crafted for you.</p>
+
+                <!-- Voice Notes Players -->
+                <div class="audio-cards-grid">
+                    <div class="audio-card">
+                        <span>🎙️ Recording 01</span>
+                        <audio controls><source src="assets/audio/recording01.mp3" type="audio/mpeg"></audio>
+                    </div>
+                    <div class="audio-card">
+                        <span>🎙️ Recording 02</span>
+                        <audio controls><source src="assets/audio/recording02.mp3" type="audio/mpeg"></audio>
+                    </div>
+                    <div class="audio-card">
+                        <span>🎙️ Recording 03</span>
+                        <audio controls><source src="assets/audio/recording03.mp3" type="audio/mpeg"></audio>
+                    </div>
+                </div>
+
+                <h3>📸 Photo Gallery</h3>
+                <div class="photo-grid">
+                    <img src="assets/images/penguin-snow.jpg" alt="Memory Snow">
+                    <img src="assets/images/penguin-birthday.jpg" alt="Memory Birthday">
+                    <img src="assets/images/penguin-funny.jpg" alt="Memory Funny">
+                    <img src="assets/images/penguin-gift.jpg" alt="Memory Gift">
+                </div>
+
+                <h3>🎬 Video Memory Player</h3>
+                <div class="video-container">
+                    <video controls poster="assets/images/penguin-birthday.jpg">
+                        <source src="https://files.catbox.moe/mferbj.mp4" type="video/mp4">
+                        Your browser does not support video playback.
+                    </video>
+                </div>
+
+                <button class="glass-btn primary-btn" onclick="nextStep(5)" style="margin-top: 20px;">Unlock Grand Finale 🔑</button>
+            </div>
+        </section>
+
+        <!-- STEP 5: Grand Finale & Secret Corner -->
+        <section class="garden-section" id="step-5">
+            <div class="glass-card finale-card">
+                <h2>🔑 Grand Finale & Secret Corner</h2>
+                <p>You've made it through the night garden! Unlock the final secret audio message below.</p>
+                
+                <div class="secret-box">
+                    <div class="secret-icon">🔒</div>
+                    <h3>Secret Audio Message</h3>
+                    <audio controls id="secret-audio">
+                        <source src="assets/audio/secret-audio.mp3" type="audio/mpeg">
+                    </audio>
+                </div>
+
+                <div class="credits-box">
+                    <h3>👨‍💻 Credits & Socials</h3>
+                    <p><strong>Web Developer:</strong> <a href="https://instagram.com/mr_sta.01" target="_blank">@mr_sta.01</a></p>
+                    <p><strong>Birthday Queen:</strong> <a href="https://instagram.com/yaapaachan" target="_blank">@yaapaachan</a></p>
+                </div>
+
+                <button class="glass-btn secondary-btn" onclick="nextStep(1)">🔄 Restart Garden Tour</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Stepper Pagination Footer -->
+    <footer class="glass-footer">
+        <button id="prev-btn" class="glass-btn nav-btn" onclick="changeStep(-1)">← Back</button>
+        <span id="step-indicator">01 / 05</span>
+        <button id="next-btn" class="glass-btn nav-btn" onclick="changeStep(1)">Next →</button>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
