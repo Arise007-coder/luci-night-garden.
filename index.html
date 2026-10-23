@@ -2,182 +2,1335 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luci's Magical Night Garden ✨</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Cache Clearing / Preventing Meta Tags -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <title>Luci's Magical Night Garden 🌙💗</title>
+    
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-midnight: #0b071e;
+            --bg-deep: #140d2f;
+            --violet-primary: #2d1b54;
+            --violet-card: rgba(45, 27, 84, 0.65);
+            --lavender-soft: #c8b6ff;
+            --pink-accent: #ff70a6;
+            --pink-rose: #ff97b7;
+            --gold-accent: #ffd166;
+            --white: #ffffff;
+            --text-muted: #d0c9e8;
+            --glass-border: rgba(255, 112, 166, 0.25);
+            --glass-shadow: 0 8px 32px 0 rgba(11, 7, 30, 0.37);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-midnight);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        h1, h2, h3, .serif-font {
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Starfield Canvas */
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* App Container */
+        #app {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px 20px 100px 20px;
+        }
+
+        /* Top Header */
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--violet-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
+        }
+
+        header h1 {
+            font-size: 1.25rem;
+            color: var(--pink-rose);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Countdown Container */
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .countdown-box {
+            background: rgba(11, 7, 30, 0.5);
+            padding: 6px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(200, 182, 255, 0.2);
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .countdown-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gold-accent);
+        }
+
+        .countdown-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Scene Wrapper */
+        .scene {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+            flex: 1;
+            flex-direction: column;
+        }
+
+        .scene.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Glass Cards */
+        .glass-card {
+            background: var(--violet-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--glass-shadow);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .glass-card h2 {
+            font-size: 1.5rem;
+            color: var(--pink-rose);
+            margin-bottom: 12px;
+        }
+
+        .glass-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        /* Buttons & Interactive Elements */
+        .magical-btn {
+            background: linear-gradient(135deg, var(--pink-accent), #9b5de5);
+            color: var(--white);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 112, 166, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 8px 0;
+        }
+
+        .magical-btn:active {
+            transform: scale(0.96);
+        }
+
+        .magical-btn:hover {
+            box-shadow: 0 6px 20px rgba(255, 112, 166, 0.6);
+        }
+
+        /* Penguin Guide */
+        .penguin-guide {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 50%;
+            margin: 0 auto 15px auto;
+            display: block;
+            animation: floatPenguin 3s ease-in-out infinite;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        @keyframes floatPenguin {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Fixed Bottom Navigation */
+        .fixed-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(20, 13, 47, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            z-index: 1000;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            border: 1px solid var(--glass-border);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .nav-btn:not(:disabled):active {
+            background: rgba(255, 112, 166, 0.3);
+        }
+
+        .scene-counter {
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            color: var(--gold-accent);
+            letter-spacing: 1px;
+        }
+
+        /* Scene 01: Grand Entrance */
+        .typing-container {
+            min-height: 120px;
+            white-space: pre-line;
+            margin-bottom: 20px;
+        }
+
+        .music-controller-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(11, 7, 30, 0.4);
+            padding: 10px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Scene 02: Vibe Check */
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .quiz-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--glass-border);
+            padding: 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .quiz-card.selected {
+            background: rgba(255, 112, 166, 0.25);
+            border-color: var(--pink-accent);
+            box-shadow: 0 0 15px rgba(255, 112, 166, 0.4);
+        }
+
+        /* Scene 03: Penguin Guide */
+        .personality-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .personality-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .personality-card.selected {
+            background: rgba(200, 182, 255, 0.2);
+            border-color: var(--lavender-soft);
+        }
+
+        /* Scene 04: 100 Flowers */
+        .garden-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            max-height: 220px;
+            overflow-y: auto;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(11, 7, 30, 0.3);
+            border-radius: 12px;
+        }
+
+        .flower-bud {
+            width: 100%;
+            aspect-ratio: 1;
+            background: rgba(200, 182, 255, 0.2);
+            border-radius: 50%;
+            transform: scale(0.5);
+            opacity: 0.4;
+            transition: transform 0.5s ease, background 0.5s ease, opacity 0.5s ease;
+        }
+
+        .flower-bud.bloomed {
+            transform: scale(1);
+            opacity: 1;
+            background: radial-gradient(circle, var(--pink-rose) 0%, var(--pink-accent) 100%);
+            box-shadow: 0 0 8px var(--pink-accent);
+        }
+
+        /* Scene 05: Whispers */
+        .audio-card {
+            background: rgba(11, 7, 30, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 14px;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        .audio-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .audio-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--white);
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .play-pause-btn {
+            background: var(--pink-accent);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar-container {
+            flex: 1;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--gold-accent);
+            border-radius: 3px;
+            width: 0%;
+        }
+
+        /* Scene 06: Cake Cutting */
+        .cake-wrapper {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 20px auto;
+            background: linear-gradient(135deg, #ff97b7, #9b5de5);
+            border-radius: 20px 20px 10px 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.6s ease;
+        }
+
+        .cake-wrapper.cut {
+            clip-path: polygon(0 0, 80% 0, 80% 100%, 0 100%);
+            transform: translateX(-15px) rotate(-5deg);
+        }
+
+        .candle {
+            width: 8px;
+            height: 30px;
+            background: var(--gold-accent);
+            position: absolute;
+            top: -25px;
+            border-radius: 4px;
+        }
+
+        .flame {
+            width: 12px;
+            height: 16px;
+            background: #ffbe0b;
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            top: -15px;
+            left: -2px;
+            animation: flicker 0.6s infinite alternate;
+            box-shadow: 0 0 10px #ffbe0b;
+        }
+
+        @keyframes flicker {
+            0% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(1.15); opacity: 1; }
+        }
+
+        /* Scene 07: Mystery Gift Room */
+        .gifts-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .gift-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .gift-box.opened {
+            background: rgba(255, 112, 166, 0.15);
+            border-color: var(--pink-accent);
+        }
+
+        /* Scene 08: Cinema Theater */
+        .video-card {
+            background: rgba(11, 7, 30, 0.5);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        video {
+            width: 100%;
+            border-radius: 10px;
+            background: #000;
+            max-height: 220px;
+            object-fit: cover;
+        }
+
+        /* Scene 09: Secret Letter */
+        .envelope-container {
+            background: linear-gradient(135deg, #2d1b54, #481e42);
+            border: 2px solid var(--gold-accent);
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin: 20px 0;
+            transition: transform 0.3s;
+        }
+
+        .envelope-container:active {
+            transform: scale(0.98);
+        }
+
+        .letter-content {
+            display: none;
+            background: rgba(11, 7, 30, 0.85);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: left;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+            white-space: pre-line;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: var(--text-muted);
+        }
+
+        /* Scene 10: Secret Corner & Grand Finale */
+        .social-credits {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            background: rgba(11, 7, 30, 0.4);
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .social-link {
+            color: var(--gold-accent);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .social-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Fallback Box for Missing Media */
+        .media-fallback {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px dashed rgba(255, 112, 166, 0.4);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--pink-rose);
+            margin-top: 8px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <!-- Animated Starfield Background Canvas -->
+
+    <!-- Background Starfield Canvas -->
     <canvas id="starfield"></canvas>
 
-    <!-- Ambient Audio Element -->
-    <audio id="bg-music" loop>
-        <source src="assets/audio/background-music.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+    <!-- Main Application Wrapper -->
+    <div id="app">
 
-    <!-- Top Navigation Bar / Audio Toggle -->
-    <header class="glass-header">
-        <div class="brand">🌸 Luci's Birthday Garden</div>
-        <div class="header-controls">
-            <button id="music-toggle" class="glass-btn icon-btn" title="Toggle Ambient Music">🎵 <span id="music-status">Play Music</span></button>
-        </div>
-    </header>
+        <!-- Top Header -->
+        <header id="main-header">
+            <h1 class="serif-font">Luci's Magical Night Garden</h1>
+            <div class="countdown-container">
+                <div class="countdown-box">
+                    <div id="cd-days" class="countdown-value">00</div>
+                    <div class="countdown-label">Days</div>
+                </div>
+                <div class="countdown-box">
+                    <div id="cd-hours" class="countdown-value">00</div>
+                    <div class="countdown-label">Hours</div>
+                </div>
+                <div class="countdown-box">
+                    <div id="cd-mins" class="countdown-value">00</div>
+                    <div class="countdown-label">Mins</div>
+                </div>
+                <div class="countdown-box">
+                    <div id="cd-secs" class="countdown-value">00</div>
+                    <div class="countdown-label">Secs</div>
+                </div>
+            </div>
+        </header>
 
-    <!-- Main Container / Multi-Step Garden Tour -->
-    <main class="container">
-        
-        <!-- STEP 1: Welcome & Companion Selector -->
-        <section class="garden-section active" id="step-1">
-            <div class="glass-card welcome-card">
-                <div class="badge">A Little Birthday Fairytale</div>
-                <h1>Luci's Birthday Garden</h1>
+        <!-- ========================================== -->
+        <!-- SCENE 01 — GRAND ENTRANCE 🌙 -->
+        <!-- ========================================== -->
+        <section id="scene-01" class="scene active">
+            <div class="glass-card">
+                <img src="assets/images/penguin-birthday.jpg?v=20261023" alt="Birthday Penguin" class="penguin-guide" onerror="this.style.display='none'">
+                <h2 class="serif-font">Grand Entrance 🌙</h2>
                 
-                <!-- Interactive Archery Teaser Widget -->
-                <div class="archery-preview-container" id="archery-trigger-box">
-                    <div class="floating-heart" id="target-heart">❤️</div>
-                    <div class="bow-container">🏹</div>
+                <div class="music-controller-box">
+                    <span style="font-size: 0.9rem;">🎵 Background Music</span>
+                    <button id="music-toggle-btn" class="magical-btn" style="padding: 6px 14px; font-size: 0.85rem; margin: 0;">Enable Music</button>
                 </div>
 
-                <p class="subtitle">A little magic, just for you ✨</p>
-                <p class="intro-text">Tonight...<br>A little garden is waiting...<br>Made especially for you, Luci.</p>
+                <div id="typing-greeting" class="typing-container"></div>
                 
-                <!-- Companion Selector -->
-                <div class="companion-selector">
-                    <p class="companion-label">🐧 Choose your birthday companion mood:</p>
-                    <div class="companion-options">
-                        <img src="assets/images/penguin-birthday.jpg" alt="Birthday Penguin" class="companion-thumb active" data-mood="birthday">
-                        <img src="assets/images/penguin-funny.jpg" alt="Funny Penguin" class="companion-thumb" data-mood="funny">
-                        <img src="assets/images/penguin-gift.jpg" alt="Gift Penguin" class="companion-thumb" data-mood="gift">
-                        <img src="assets/images/penguin-simple.jpg" alt="Simple Penguin" class="companion-thumb" data-mood="simple">
+                <button id="scene1-start-btn" class="magical-btn" style="display: none;">Start the Magic ✨</button>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SCENE 02 — VIBE CHECK 👑 -->
+        <!-- ========================================== -->
+        <section id="scene-02" class="scene">
+            <div class="glass-card">
+                <img src="assets/images/penguin-funny.jpg?v=20261023" alt="Funny Penguin" class="penguin-guide" onerror="this.style.display='none'">
+                <h2 class="serif-font">Vibe Check 👑</h2>
+                <p>What kind of birthday queen are you today, Luci?</p>
+                
+                <div class="quiz-options">
+                    <div class="quiz-card" data-option="A">
+                        👑 Maximum Royal Treatment
+                    </div>
+                    <div class="quiz-card" data-option="B">
+                        🎂 Eating Too Much Cake
                     </div>
                 </div>
 
-                <button class="glass-btn primary-btn" onclick="nextStep(2)">
-                    <img src="assets/images/pudgy-penguin.gif" alt="Pudgy Penguin" class="btn-gif"> Start the Magic ✨
-                </button>
-                <small class="hint-text">Best experienced with a little sound, if you like.</small>
+                <p id="quiz-response" style="margin-top: 15px; font-weight: 600; color: var(--gold-accent); min-height: 40px;"></p>
             </div>
         </section>
 
-        <!-- STEP 2: Cupid's Archery Mini-Game -->
-        <section class="garden-section" id="step-2">
-            <div class="glass-card game-card">
-                <h2>🏹 Cupid's Archery</h2>
-                <p>Pull back the bow and shoot an arrow straight into the heart to unlock your first birthday wish!</p>
+        <!-- ========================================== -->
+        <!-- SCENE 03 — PENGUIN GUIDE MASCOT 🐧 -->
+        <!-- ========================================== -->
+        <section id="scene-03" class="scene">
+            <div class="glass-card">
+                <img src="assets/images/pudgy-penguin.gif?v=20261023" alt="Pudgy Penguin Guide" class="penguin-guide" onerror="this.style.display='none'">
+                <h2 class="serif-font">Penguin Guide Mascot 🐧</h2>
+                <p>Hi, Luci! 🐧<br><br>I'm your little penguin guide. I'll be here to help you discover every magical surprise hidden throughout your birthday garden!<br><br>Ready to explore together? ✨</p>
                 
-                <div class="game-arena" id="archery-arena">
-                    <div class="target-heart-node" id="game-target">💖</div>
-                    <div class="arrow-shooter" id="shooter-bow">🏹</div>
-                </div>
-                <div class="game-controls">
-                    <button class="glass-btn primary-btn" id="shoot-btn">Shoot Arrow 🎯</button>
-                </div>
-                <div id="wish-reveal-box" class="hidden-wish">
-                    <p class="wish-text">"All our long years are your touch, and all our dreams are yours." ✨</p>
-                    <button class="glass-btn secondary-btn" onclick="nextStep(3)">Continue to the Heart Tree 🌳</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- STEP 3: Enchanted Heart Tree -->
-        <section class="garden-section" id="step-3">
-            <div class="glass-card tree-card">
-                <h2>🌳 The Enchanted Heart Tree</h2>
-                <p>Tap repeatedly to grow and bloom the tree of memories!</p>
-                
-                <div class="canvas-wrapper">
-                    <canvas id="heart-tree-canvas" width="350" height="350"></canvas>
-                </div>
-
-                <div class="tree-stats">
-                    <span>Growth Level: <strong id="growth-counter">0</strong> / 10</span>
-                </div>
-
-                <div class="action-row">
-                    <button class="glass-btn primary-btn" id="grow-tree-btn">Tap to Grow 🌱</button>
-                    <button class="glass-btn secondary-btn" id="proceed-gallery" disabled onclick="nextStep(4)">Enter Galleries 📸</button>
+                <p style="font-size: 0.85rem; margin-bottom: 8px;">Choose your guide personality:</p>
+                <div class="personality-grid">
+                    <div class="personality-card" data-personality="cozy">Cozy Vibes 🌙</div>
+                    <div class="personality-card" data-personality="party">Party Mode 🎉</div>
+                    <div class="personality-card" data-personality="sweet">Sweet & Cute 💗</div>
+                    <div class="personality-card" data-personality="magical">Magical Dreams ✨</div>
                 </div>
             </div>
         </section>
 
-        <!-- STEP 4: Voice Notes & Galleries -->
-        <section class="garden-section" id="step-4">
-            <div class="glass-card gallery-card">
-                <h2>🎙️ Voice Notes & Memories</h2>
-                <p>Listen to special voice recordings crafted for you.</p>
-
-                <!-- Voice Notes Players -->
-                <div class="audio-cards-grid">
-                    <div class="audio-card">
-                        <span>🎙️ Recording 01</span>
-                        <audio controls><source src="assets/audio/recording01.mp3" type="audio/mpeg"></audio>
-                    </div>
-                    <div class="audio-card">
-                        <span>🎙️ Recording 02</span>
-                        <audio controls><source src="assets/audio/recording02.mp3" type="audio/mpeg"></audio>
-                    </div>
-                    <div class="audio-card">
-                        <span>🎙️ Recording 03</span>
-                        <audio controls><source src="assets/audio/recording03.mp3" type="audio/mpeg"></audio>
-                    </div>
+        <!-- ========================================== -->
+        <!-- SCENE 04 — THE GARDEN OF 100 FLOWERS 🌸 -->
+        <!-- ========================================== -->
+        <section id="scene-04" class="scene">
+            <div class="glass-card">
+                <img src="assets/images/penguin-snow.jpg?v=20261023" alt="Snow Penguin" class="penguin-guide" onerror="this.style.display='none'">
+                <h2 class="serif-font">The Garden of 100 Blossoms 🌸</h2>
+                <p>Click below to awaken the magical night garden.</p>
+                
+                <div class="garden-grid" id="flower-grid">
+                    <!-- Populated dynamically via JS -->
                 </div>
 
-                <h3>📸 Photo Gallery</h3>
-                <div class="photo-grid">
-                    <img src="assets/images/penguin-snow.jpg" alt="Memory Snow">
-                    <img src="assets/images/penguin-birthday.jpg" alt="Memory Birthday">
-                    <img src="assets/images/penguin-funny.jpg" alt="Memory Funny">
-                    <img src="assets/images/penguin-gift.jpg" alt="Memory Gift">
+                <button id="bloom-btn" class="magical-btn">Let the Garden Bloom 🌸</button>
+                <p id="garden-message" style="margin-top: 15px; font-weight: 600; color: var(--gold-accent); display: none;"></p>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SCENE 05 — WHISPERS IN THE BREEZE 🎙️ -->
+        <!-- ========================================== -->
+        <section id="scene-05" class="scene">
+            <div class="glass-card" style="padding: 16px;">
+                <img src="assets/images/penguin-birthday.jpg?v=20261023" alt="Whisper Penguin" class="penguin-guide" style="width: 60px; height: 60px; margin-bottom: 10px;" onerror="this.style.display='none'">
+                <h2 class="serif-font" style="font-size: 1.3rem;">Whispers in the Breeze 🎙️</h2>
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">Listen to your personal audio recordings.</p>
+
+                <!-- Recording 01 -->
+                <div class="audio-card" data-src="assets/audio/recording01.mp3?v=20261023">
+                    <div class="audio-header">
+                        <span class="audio-title">Recording 01: A Little Whisper 💗</span>
+                    </div>
+                    <div class="audio-controls">
+                        <button class="play-pause-btn">▶</button>
+                        <div class="progress-bar-container"><div class="progress-bar-fill"></div></div>
+                    </div>
+                    <div class="media-fallback" style="display:none;">Audio file not found or failed to load.</div>
                 </div>
 
-                <h3>🎬 Video Memory Player</h3>
-                <div class="video-container">
-                    <video controls poster="assets/images/penguin-birthday.jpg">
+                <!-- Recording 02 -->
+                <div class="audio-card" data-src="assets/audio/recording02.mp3?v=20261023">
+                    <div class="audio-header">
+                        <span class="audio-title">Recording 02: A Message Just for You 🌙</span>
+                    </div>
+                    <div class="audio-controls">
+                        <button class="play-pause-btn">▶</button>
+                        <div class="progress-bar-container"><div class="progress-bar-fill"></div></div>
+                    </div>
+                    <div class="media-fallback" style="display:none;">Audio file not found or failed to load.</div>
+                </div>
+
+                <!-- Recording 03 -->
+                <div class="audio-card" data-src="assets/audio/recording03.mp3?v=20261023">
+                    <div class="audio-header">
+                        <span class="audio-title">Recording 03: One More Little Surprise ✨</span>
+                    </div>
+                    <div class="audio-controls">
+                        <button class="play-pause-btn">▶</button>
+                        <div class="progress-bar-container"><div class="progress-bar-fill"></div></div>
+                    </div>
+                    <div class="media-fallback" style="display:none;">Audio file not found or failed to load.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SCENE 06 — BIRTHDAY CAKE CUTTING 🎂 -->
+        <!-- ========================================== -->
+        <section id="scene-06" class="scene">
+            <div class="glass-card">
+                <img src="assets/images/penguin-simple.jpg?v=20261023" alt="Simple Penguin" class="penguin-guide" onerror="this.style.display='none'">
+                <h2 class="serif-font">Birthday Cake Cutting 🎂</h2>
+                <p>Make a Birthday Wish, Luci!</p>
+
+                <div class="cake-wrapper" id="birthday-cake">
+                    <div class="candle"><div class="flame"></div></div>
+                </div>
+
+                <button id="cut-cake-btn" class="magical-btn">Cut the Cake ✨</button>
+                <p id="cake-message" style="margin-top: 15px; font-weight: 600; color: var(--gold-accent); display: none;"></p>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SCENE 07 — MYSTERY GIFT ROOM 🎁 -->
+        <!-- ========================================== -->
+        <section id="scene-07" class="scene">
+            <div class="glass-card">
+                <img src="assets/images/penguin-gift.jpg?v=20261023" alt="Gift Penguin" class="penguin-guide" onerror="this.style.display='none'">
+                <h2 class="serif-font">Mystery Gift Room 🎁</h2>
+                <p>Unwrap your birthday surprises below.</p>
+
+                <div class="gifts-grid">
+                    <div class="gift-box" data-gift="1">
+                        <strong>🎁 Gift of Happiness 💗</strong>
+                        <p class="gift-text" style="display:none; margin-top:8px; font-size:0.85rem; color:var(--gold-accent);">May your days be filled with laughter and little moments of happiness.</p>
+                    </div>
+                    <div class="gift-box" data-gift="2">
+                        <strong>✨ Gift of Memories 🌙</strong>
+                        <p class="gift-text" style="display:none; margin-top:8px; font-size:0.85rem; color:var(--gold-accent);">May the memories you make this year become stories you love remembering.</p>
+                    </div>
+                    <div class="gift-box" data-gift="3">
+                        <strong>🌙 The Mystery Gift ✨</strong>
+                        <p class="gift-text" style="display:none; margin-top:8px; font-size:0.85rem; color:var(--gold-accent);">Your biggest gift is a new chapter waiting to be filled with magic. ✨</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SCENE 08 — CINEMATIC VIDEO THEATER 🎬 -->
+        <!-- ========================================== -->
+        <section id="scene-08" class="scene">
+            <div class="glass-card" style="padding: 16px;">
+                <img src="assets/images/penguin-simple.jpg?v=20261023" alt="Cinema Penguin" class="penguin-guide" style="width: 60px; height: 60px; margin-bottom: 10px;" onerror="this.style.display='none'">
+                <h2 class="serif-font" style="font-size: 1.3rem;">Cinematic Video Theater 🎬</h2>
+                
+                <!-- Video 01 -->
+                <div class="video-card">
+                    <p style="font-size: 0.9rem; margin-bottom: 8px; font-weight:600;">Video 01: A Little Memory ✨</p>
+                    <video preload="metadata" controls>
+                        <source src="assets/videos/video01.mp4?v=20261023" type="video/mp4">
+                        Your browser does not support video playback.
+                    </video>
+                    <div class="media-fallback" style="display:none;">Video 01 file not found (assets/videos/video01.mp4).</div>
+                </div>
+
+                <!-- Video 02 -->
+                <div class="video-card">
+                    <p style="font-size: 0.9rem; margin-bottom: 8px; font-weight:600;">Video 02: The Unexpected Surprise 🎬</p>
+                    <video preload="metadata" controls>
                         <source src="https://files.catbox.moe/mferbj.mp4" type="video/mp4">
                         Your browser does not support video playback.
                     </video>
+                    <div class="media-fallback" style="display:none;">External Video 02 failed to load.</div>
                 </div>
 
-                <button class="glass-btn primary-btn" onclick="nextStep(5)" style="margin-top: 20px;">Unlock Grand Finale 🔑</button>
+                <!-- Video 03 -->
+                <div class="video-card">
+                    <p style="font-size: 0.9rem; margin-bottom: 8px; font-weight:600;">Video 03: Just for You, Luci 💗</p>
+                    <video preload="metadata" controls>
+                        <source src="assets/videos/video03.mp4?v=20261023" type="video/mp4">
+                        Your browser does not support video playback.
+                    </video>
+                    <div class="media-fallback" style="display:none;">Video 03 file not found (assets/videos/video03.mp4).</div>
+                </div>
             </div>
         </section>
 
-        <!-- STEP 5: Grand Finale & Secret Corner -->
-        <section class="garden-section" id="step-5">
-            <div class="glass-card finale-card">
-                <h2>🔑 Grand Finale & Secret Corner</h2>
-                <p>You've made it through the night garden! Unlock the final secret audio message below.</p>
+        <!-- ========================================== -->
+        <!-- SCENE 09 — THE SECRET LETTER 💌 -->
+        <!-- ========================================== -->
+        <section id="scene-09" class="scene">
+            <div class="glass-card">
+                <img src="assets/images/penguin-birthday.jpg?v=20261023" alt="Letter Penguin" class="penguin-guide" onerror="this.style.display='none'">
+                <h2 class="serif-font">The Secret Letter 💌</h2>
+                <p>Luci, there's something special waiting inside this little envelope.</p>
+
+                <div class="envelope-container" id="open-envelope-btn">
+                    <div style="font-size: 2.5rem; margin-bottom: 10px;">✉️💗</div>
+                    <strong style="color: var(--gold-accent);">Open Your Letter 💗</strong>
+                </div>
+
+                <div id="letter-text-box" class="letter-content">
+My Dearest Luci, 💗
+
+Happy Birthday!
+
+Today is a little reminder that someone as special as you deserves happiness, kindness, and beautiful moments—not just today, but throughout the year ahead.
+
+I hope this new chapter brings you peaceful days, unexpected reasons to smile, wonderful adventures, and people who make you feel appreciated.
+
+May you always find courage when things feel difficult, laughter when you need it most, and little moments of magic in the ordinary days.
+
+I hope the wishes you keep quietly in your heart find their way toward becoming something beautiful.
+
+Thank you for being you.
+
+As you step into another year, I hope you create memories that make you smile, discover new things that inspire you, and find countless reasons to feel proud of yourself.
+
+May your birthday be filled with warmth, sweetness, and all the little things that make you happy.
+
+Happy Birthday, Luci. 🌸
+
+May your magical night garden always remind you that beautiful things are waiting to bloom.
+
+With warm birthday wishes,
+Someone wishing you a wonderful year ahead. 💗
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SCENE 10 — SECRET CORNER & FINALE 💗 -->
+        <!-- ========================================== -->
+        <section id="scene-10" class="scene">
+            <div class="glass-card">
+                <img src="assets/images/pudgy-penguin.gif?v=20261023" alt="Finale Penguin" class="penguin-guide" onerror="this.style.display='none'">
+                <h2 class="serif-font">Our Little Secret Corner 💗</h2>
                 
-                <div class="secret-box">
-                    <div class="secret-icon">🔒</div>
-                    <h3>Secret Audio Message</h3>
-                    <audio controls id="secret-audio">
-                        <source src="assets/audio/secret-audio.mp3" type="audio/mpeg">
-                    </audio>
+                <div class="social-credits">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Web Developer</div>
+                        <a href="https://www.instagram.com/mr_sta.01/" target="_blank" rel="noopener noreferrer" class="social-link">@mr_sta.01</a>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Birthday Queen</div>
+                        <a href="https://www.instagram.com/yaapaachan/" target="_blank" rel="noopener noreferrer" class="social-link">@yaapaachan</a>
+                    </div>
                 </div>
 
-                <div class="credits-box">
-                    <h3>👨‍💻 Credits & Socials</h3>
-                    <p><strong>Web Developer:</strong> <a href="https://instagram.com/mr_sta.01" target="_blank">@mr_sta.01</a></p>
-                    <p><strong>Birthday Queen:</strong> <a href="https://instagram.com/yaapaachan" target="_blank">@yaapaachan</a></p>
+                <!-- Secret Audio Player -->
+                <div class="audio-card" data-src="assets/audio/secret-audio.mp3?v=20261023" style="margin-top: 15px;">
+                    <div class="audio-header">
+                        <span class="audio-title">Secret Audio Message 🌙</span>
+                    </div>
+                    <div class="audio-controls">
+                        <button class="play-pause-btn">▶</button>
+                        <div class="progress-bar-container"><div class="progress-bar-fill"></div></div>
+                    </div>
+                    <div class="media-fallback" style="display:none;">Secret audio file not found (assets/audio/secret-audio.mp3).</div>
                 </div>
 
-                <button class="glass-btn secondary-btn" onclick="nextStep(1)">🔄 Restart Garden Tour</button>
+                <p style="margin-top: 15px; font-size: 0.9rem;">
+                    Happy Birthday, Luci! 🎂💗<br><br>
+                    May your world be filled with beautiful surprises, your heart with happiness, and your days with memories worth keeping. Thank you for being part of this little magical world. Tonight, the stars shine for you. ✨
+                </p>
+
+                <button id="finale-btn" class="magical-btn" style="margin-top: 15px;">Make One Last Birthday Wish 🌠</button>
             </div>
         </section>
 
-    </main>
+        <!-- Fixed Bottom Navigation Bar -->
+        <nav class="fixed-nav">
+            <button id="prev-btn" class="nav-btn" disabled>← Previous</button>
+            <div id="scene-counter" class="scene-counter">01 / 10</div>
+            <button id="next-btn" class="nav-btn">Next →</button>
+        </nav>
 
-    <!-- Bottom Stepper Pagination Footer -->
-    <footer class="glass-footer">
-        <button id="prev-btn" class="glass-btn nav-btn" onclick="changeStep(-1)">← Back</button>
-        <span id="step-indicator">01 / 05</span>
-        <button id="next-btn" class="glass-btn nav-btn" onclick="changeStep(1)">Next →</button>
-    </footer>
+    </div>
 
-    <script src="script.js"></script>
+    <!-- JavaScript Application Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const totalScenes = 10;
+            let currentScene = 1;
+            
+            // Audio Instances
+            let bgMusic = null;
+            let activeAudio = null;
+            let musicEnabled = false;
+
+            // User States
+            let userQuizChoice = null;
+            let userCompanion = null;
+            let flowersBloomed = false;
+            let cakeCut = false;
+            let openedGifts = new Set();
+            let letterOpened = false;
+
+            // DOM Elements
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const sceneCounter = document.getElementById('scene-counter');
+
+            // Initialize App
+            function initializeApp() {
+                initStarfield();
+                initCountdown();
+                initScene01();
+                initScene02();
+                initScene03();
+                initScene04();
+                initScene05();
+                initScene06();
+                initScene07();
+                initScene08();
+                initScene09();
+                initScene10();
+                updateNavigation();
+            }
+
+            // Starfield Animation
+            function initStarfield() {
+                const canvas = document.getElementById('starfield');
+                const ctx = canvas.getContext('2d');
+                let width = canvas.width = window.innerWidth;
+                let height = canvas.height = window.innerHeight;
+
+                window.addEventListener('resize', () => {
+                    width = canvas.width = window.innerWidth;
+                    height = canvas.height = window.innerHeight;
+                });
+
+                const stars = Array.from({ length: 80 }, () => ({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    radius: Math.random() * 1.5 + 0.5,
+                    alpha: Math.random(),
+                    speed: Math.random() * 0.005 + 0.002
+                }));
+
+                function animate() {
+                    ctx.clearRect(0, 0, width, height);
+                    ctx.fillStyle = '#ffffff';
+                    stars.forEach(star => {
+                        star.alpha += star.speed;
+                        if (star.alpha > 1 || star.alpha < 0) star.speed = -star.speed;
+                        ctx.globalAlpha = Math.abs(star.alpha);
+                        ctx.beginPath();
+                        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+                    requestAnimationFrame(animate);
+                }
+                animate();
+            }
+
+            // Birthday Countdown (Target: Oct 24, 2026, 12:00 AM)
+            function initCountdown() {
+                const targetDate = new Date('2026-10-24T00:00:00');
+                
+                function update() {
+                    const now = new Date();
+                    const diff = targetDate - now;
+
+                    if (diff <= 0) {
+                        document.querySelector('.countdown-container').innerHTML = '<div style="color:var(--gold-accent); font-weight:700; padding:6px;">Happy Birthday Luci! 🎉</div>';
+                        return;
+                    }
+
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                    const mins = Math.floor((diff / 1000 / 60) % 60);
+                    const secs = Math.floor((diff / 1000) % 60);
+
+                    document.getElementById('cd-days').textContent = String(days).padStart(2, '0');
+                    document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+                    document.getElementById('cd-mins').textContent = String(mins).padStart(2, '0');
+                    document.getElementById('cd-secs').textContent = String(secs).padStart(2, '0');
+                }
+                update();
+                setInterval(update, 1000);
+            }
+
+            // Scene Navigation
+            function showScene(sceneNum) {
+                pauseAllMedia();
+                document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+                const target = document.getElementById(`scene-${String(sceneNum).padStart(2, '0')}`);
+                if (target) target.classList.add('active');
+                currentScene = sceneNum;
+                sceneCounter.textContent = `${String(currentScene).padStart(2, '0')} / ${totalScenes}`;
+                
+                prevBtn.disabled = currentScene === 1;
+                nextBtn.disabled = currentScene === totalScenes;
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                triggerConfettiBurst(0.25);
+            }
+
+            prevBtn.addEventListener('click', () => { if (currentScene > 1) showScene(currentScene - 1); });
+            nextBtn.addEventListener('click', () => { if (currentScene < totalScenes) showScene(currentScene + 1); });
+
+            // Confetti Helper
+            function triggerConfettiBurst(particleScale = 1) {
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+                confetti({
+                    particleCount: 40 * particleScale,
+                    spread: 60,
+                    origin: { y: 0.8 },
+                    colors: ['#ff70a6', '#ffd166', '#c8b6ff', '#ffffff']
+                });
+            }
+
+            // Media Pause Helper
+            function pauseAllMedia() {
+                if (activeAudio) {
+                    activeAudio.pause();
+                    activeAudio = null;
+                }
+                document.querySelectorAll('video').forEach(v => v.pause());
+            }
+
+            // Background Music Management
+            function initScene01() {
+                const musicToggleBtn = document.getElementById('music-toggle-btn');
+                const typingContainer = document.getElementById('typing-greeting');
+                const startBtn = document.getElementById('scene1-start-btn');
+
+                bgMusic = new Audio('assets/audio/background-music.mp3?v=20261023');
+                bgMusic.loop = true;
+
+                musicToggleBtn.addEventListener('click', () => {
+                    if (!musicEnabled) {
+                        bgMusic.play().then(() => {
+                            musicEnabled = true;
+                            musicToggleBtn.textContent = "Disable Music";
+                            musicToggleBtn.style.background = "rgba(255,112,166,0.3)";
+                        }).catch(() => {
+                            alert("Audio autoplay was restricted by browser. Please interact further.");
+                        });
+                    } else {
+                        bgMusic.pause();
+                        musicEnabled = false;
+                        musicToggleBtn.textContent = "Enable Music";
+                        musicToggleBtn.style.background = "";
+                    }
+                });
+
+                // Typing Greeting
+                const greetingText = "Welcome to your magical night garden, Luci! ✨\n\nTonight, the stars shine a little brighter,\nthe flowers bloom a little sweeter,\nand every little magical moment is made just for you.\n\nYour birthday adventure begins here. 💗";
+                let charIdx = 0;
+
+                function typeWriter() {
+                    if (charIdx < greetingText.length) {
+                        typingContainer.textContent += greetingText.charAt(charIdx);
+                        charIdx++;
+                        setTimeout(typeWriter, 35);
+                    } else {
+                        startBtn.style.display = 'inline-flex';
+                    }
+                }
+                setTimeout(typeWriter, 500);
+
+                startBtn.addEventListener('click', () => {
+                    triggerConfettiBurst(0.8);
+                    showScene(2);
+                });
+            }
+
+            // Scene 02: Vibe Check
+            function initScene02() {
+                const cards = document.querySelectorAll('#scene-02 .quiz-card');
+                const responseEl = document.getElementById('quiz-response');
+
+                cards.forEach(card => {
+                    card.addEventListener('click', () => {
+                        cards.forEach(c => c.classList.remove('selected'));
+                        card.classList.add('selected');
+                        userQuizChoice = card.getAttribute('data-option');
+                        
+                        if (userQuizChoice === 'A') {
+                            responseEl.textContent = "Your Majesty, the entire magical garden belongs to you! 👑✨";
+                        } else {
+                            responseEl.textContent = "Emergency cake supply activated! Nobody disturbs the birthday queen! 🎂💗";
+                        }
+                    });
+                });
+            }
+
+            // Scene 03: Penguin Guide Mascot
+            function initScene03() {
+                const pCards = document.querySelectorAll('.personality-card');
+                pCards.forEach(card => {
+                    card.addEventListener('click', () => {
+                        pCards.forEach(c => c.classList.remove('selected'));
+                        card.classList.add('selected');
+                        userCompanion = card.getAttribute('data-personality');
+                    });
+                });
+            }
+
+            // Scene 04: Garden of 100 Flowers
+            function initScene04() {
+                const grid = document.getElementById('flower-grid');
+                const bloomBtn = document.getElementById('bloom-btn');
+                const msg = document.getElementById('garden-message');
+
+                for (let i = 0; i < 100; i++) {
+                    const bud = document.createElement('div');
+                    bud.className = 'flower-bud';
+                    grid.appendChild(bud);
+                }
+
+                bloomBtn.addEventListener('click', () => {
+                    if (flowersBloomed) return;
+                    flowersBloomed = true;
+                    const buds = grid.querySelectorAll('.flower-bud');
+                    buds.forEach((bud, idx) => {
+                        setTimeout(() => bud.classList.add('bloomed'), idx * 15);
+                    });
+                    setTimeout(() => {
+                        msg.textContent = "One hundred little blossoms, one hundred little wishes, and a garden full of birthday magic for you, Luci. 💗";
+                        msg.style.display = 'block';
+                        triggerConfettiBurst(0.6);
+                    }, 500);
+                });
+            }
+
+            // Scene 05: Whispers in the Breeze
+            function initScene05() {
+                document.querySelectorAll('#scene-05 .audio-card').forEach(card => {
+                    const src = card.getAttribute('data-src');
+                    const btn = card.querySelector('.play-pause-btn');
+                    const fill = card.querySelector('.progress-bar-fill');
+                    const barContainer = card.querySelector('.progress-bar-container');
+                    const fallback = card.querySelector('.media-fallback');
+                    
+                    const audio = new Audio(src);
+                    
+                    audio.addEventListener('error', () => {
+                        fallback.style.display = 'block';
+                        btn.disabled = true;
+                    });
+
+                    audio.addEventListener('timeupdate', () => {
+                        if (audio.duration) {
+                            fill.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+                        }
+                    });
+
+                    audio.addEventListener('ended', () => {
+                        btn.textContent = '▶';
+                        if (musicEnabled && bgMusic) bgMusic.play();
+                    });
+
+                    btn.addEventListener('click', () => {
+                        if (audio.paused) {
+                            pauseAllMedia();
+                            if (musicEnabled && bgMusic) bgMusic.pause();
+                            audio.play().then(() => {
+                                activeAudio = audio;
+                                btn.textContent = '⏸';
+                            }).catch(() => {
+                                fallback.style.display = 'block';
+                            });
+                        } else {
+                            audio.pause();
+                            activeAudio = null;
+                            btn.textContent = '▶';
+                            if (musicEnabled && bgMusic) bgMusic.play();
+                        }
+                    });
+
+                    barContainer.addEventListener('click', (e) => {
+                        if (!audio.duration) return;
+                        const rect = barContainer.getBoundingClientRect();
+                        const pos = (e.clientX - rect.left) / rect.width;
+                        audio.currentTime = pos * audio.duration;
+                    });
+                });
+            }
+
+            // Scene 06: Cake Cutting
+            function initScene06() {
+                const cake = document.getElementById('birthday-cake');
+                const cutBtn = document.getElementById('cut-cake-btn');
+                const msg = document.getElementById('cake-message');
+
+                cutBtn.addEventListener('click', () => {
+                    cake.classList.add('cut');
+                    cakeCount = true;
+                    msg.textContent = "May this new chapter bring you more laughter, more love, and a thousand beautiful reasons to smile. 💗";
+                    msg.style.display = 'block';
+                    triggerConfettiBurst(0.8);
+                });
+            }
+
+            // Scene 07: Mystery Gift Room
+            function initScene07() {
+                document.querySelectorAll('.gift-box').forEach(box => {
+                    box.addEventListener('click', () => {
+                        const giftId = box.getAttribute('data-gift');
+                        openedGifts.add(giftId);
+                        box.classList.add('opened');
+                        box.querySelector('.gift-text').style.display = 'block';
+                        triggerConfettiBurst(0.3);
+                    });
+                });
+            }
+
+            // Scene 08: Cinematic Video Theater
+            function initScene08() {
+                document.querySelectorAll('#scene-08 video').forEach(video => {
+                    video.addEventListener('play', () => {
+                        pauseAllMedia();
+                        if (musicEnabled && bgMusic) bgMusic.pause();
+                        video.play();
+                    });
+                    video.addEventListener('ended', () => {
+                        if (musicEnabled && bgMusic) bgMusic.play();
+                    });
+                    video.addEventListener('error', () => {
+                        const fallback = video.parentElement.querySelector('.media-fallback');
+                        if (fallback) fallback.style.display = 'block';
+                    });
+                });
+            }
+
+            // Scene 09: The Secret Letter
+            function initScene09() {
+                const envelope = document.getElementById('open-envelope-btn');
+                const letterBox = document.getElementById('letter-text-box');
+
+                envelope.addEventListener('click', () => {
+                    if (!letterOpened) {
+                        letterOpened = true;
+                        envelope.style.display = 'none';
+                        letterBox.style.display = 'block';
+                        triggerConfettiBurst(0.6);
+                    }
+                });
+            }
+
+            // Scene 10: Secret Corner & Grand Finale
+            function initScene10() {
+                const card = document.querySelector('#scene-10 .audio-card');
+                const src = card.getAttribute('data-src');
+                const btn = card.querySelector('.play-pause-btn');
+                const fill = card.querySelector('.progress-bar-fill');
+                const barContainer = card.querySelector('.progress-bar-container');
+                const fallback = card.querySelector('.media-fallback');
+                const finaleBtn = document.getElementById('finale-btn');
+
+                const audio = new Audio(src);
+
+                audio.addEventListener('error', () => {
+                    fallback.style.display = 'block';
+                    btn.disabled = true;
+                });
+
+                audio.addEventListener('timeupdate', () => {
+                    if (audio.duration) {
+                        fill.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+                    }
+                });
+
+                audio.addEventListener('ended', () => {
+                    btn.textContent = '▶';
+                    if (musicEnabled && bgMusic) bgMusic.play();
+                });
+
+                btn.addEventListener('click', () => {
+                    if (audio.paused) {
+                        pauseAllMedia();
+                        if (musicEnabled && bgMusic) bgMusic.pause();
+                        audio.play().then(() => {
+                            activeAudio = audio;
+                            btn.textContent = '⏸';
+                        }).catch(() => {
+                            fallback.style.display = 'block';
+                        });
+                    } else {
+                        audio.pause();
+                        activeAudio = null;
+                        btn.textContent = '▶';
+                        if (musicEnabled && bgMusic) bgMusic.play();
+                    }
+                });
+
+                barContainer.addEventListener('click', (e) => {
+                    if (!audio.duration) return;
+                    const rect = barContainer.getBoundingClientRect();
+                    const pos = (e.clientX - rect.left) / rect.width;
+                    audio.currentTime = pos * audio.duration;
+                });
+
+                finaleBtn.addEventListener('click', () => {
+                    triggerConfettiBurst(2.0);
+                    setTimeout(() => triggerConfettiBurst(1.5), 400);
+                    setTimeout(() => triggerConfettiBurst(1.0), 800);
+                });
+            }
+
+            function updateNavigation() {
+                prevBtn.disabled = currentScene === 1;
+                nextBtn.disabled = currentScene === totalScenes;
+            }
+
+            // Run Application
+            initializeApp();
+        });
+    </script>
 </body>
 </html>
