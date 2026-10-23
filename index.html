@@ -554,6 +554,107 @@
             text-decoration: underline;
         }
 
+        /* Wish Jar Container */
+        .wish-jar-section {
+            margin-top: 20px;
+            background: rgba(11, 7, 30, 0.5);
+            padding: 16px;
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+        }
+
+        .wish-jar-icon {
+            font-size: 3rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .wish-jar-icon:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .wish-scroll-area {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .wish-card-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 10px;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        .wish-author {
+            color: var(--pink-rose);
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .wish-body {
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .empty-wish-notice {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+            padding: 10px;
+        }
+
+        /* Wish Input Box */
+        .wish-container {
+            margin-top: 20px;
+            background: rgba(11, 7, 30, 0.5);
+            padding: 16px;
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .wish-input {
+            width: 100%;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 10px;
+            color: var(--white);
+            font-family: inherit;
+            font-size: 0.9rem;
+            resize: none;
+            outline: none;
+            margin-bottom: 10px;
+        }
+
+        .wish-input:focus {
+            border-color: var(--pink-accent);
+            box-shadow: 0 0 10px rgba(255, 112, 166, 0.3);
+        }
+
+        .wish-display-card {
+            display: none;
+            background: rgba(255, 209, 102, 0.15);
+            border: 1px solid var(--gold-accent);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* Fallback Box for Missing Media */
         .media-fallback {
             background: rgba(255, 0, 0, 0.1);
@@ -881,12 +982,34 @@ Someone wishing you a wonderful year ahead. 💗
                     <div class="media-fallback" style="display:none;">Secret audio file not found (assets/audio/secret-audio.mp3).</div>
                 </div>
 
+                <!-- Wish Jar Section -->
+                <div class="wish-jar-section">
+                    <div class="wish-jar-icon" id="draw-wish-jar-btn">🫙✨</div>
+                    <p style="font-size:0.85rem; color:var(--pink-rose); font-weight:600; margin-top:4px;">The Birthday Wish Jar 🫙</p>
+                    <p style="font-size:0.75rem; color:var(--text-muted);">Tap the jar to read warm birthday wishes from everyone!</p>
+                    
+                    <div id="wish-scroll-area" class="wish-scroll-area">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
                 <p style="margin-top: 15px; font-size: 0.9rem;">
                     Happy Birthday, Luci! 🎂💗<br><br>
                     May your world be filled with beautiful surprises, your heart with happiness, and your days with memories worth keeping. Thank you for being part of this little magical world. Tonight, the stars shine for you. ✨
                 </p>
 
-                <button id="finale-btn" class="magical-btn" style="margin-top: 15px;">Make One Last Birthday Wish 🌠</button>
+                <!-- Interactive Wish Box -->
+                <div class="wish-container">
+                    <p style="font-size:0.85rem; color:var(--pink-rose); margin-bottom:8px; font-weight:600;">Type Your Special Birthday Wish Below 🌠</p>
+                    <textarea id="user-wish-input" class="wish-input" placeholder="Write your birthday wish here, Luci... ✨"></textarea>
+                    
+                    <button id="finale-btn" class="magical-btn" style="width: 100%;">Make One Last Birthday Wish 🌠</button>
+                    
+                    <div id="wish-display" class="wish-display-card">
+                        <div style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Your Wish Saved in the Night Garden 🌙</div>
+                        <p id="wish-text-output" style="font-size:0.95rem; color:var(--gold-accent); font-weight:600; font-style:italic; margin:0;"></p>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -905,6 +1028,12 @@ Someone wishing you a wonderful year ahead. 💗
             const totalScenes = 10;
             let currentScene = 1;
             
+            // Spreadsheet Wishes Data ("for luci" spreadsheet)
+            const wishJarData = [];
+
+            // Track audio element objects for global cleanup
+            const activeVoiceAudios = [];
+
             // Audio Instances
             let bgMusic = null;
             let activeAudio = null;
@@ -1005,7 +1134,9 @@ Someone wishing you a wonderful year ahead. 💗
 
             // Scene Navigation
             function showScene(sceneNum) {
-                pauseAllMedia();
+                // Stop any audio/video playing on the previous scene
+                pauseAllSceneMedia();
+                
                 document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
                 const target = document.getElementById(`scene-${String(sceneNum).padStart(2, '0')}`);
                 if (target) target.classList.add('active');
@@ -1033,13 +1164,16 @@ Someone wishing you a wonderful year ahead. 💗
                 });
             }
 
-            // Media Pause Helper
-            function pauseAllMedia() {
-                if (activeAudio) {
-                    activeAudio.pause();
-                    activeAudio = null;
+            // Pause all scene-specific audio and video
+            function pauseAllSceneMedia() {
+                activeVoiceAudios.forEach(audio => audio.pause());
+                document.querySelectorAll('.play-pause-btn').forEach(btn => btn.textContent = '▶');
+                document.querySelectorAll('video').forEach(video => video.pause());
+                activeAudio = null;
+
+                if (musicEnabled && bgMusic && bgMusic.paused) {
+                    bgMusic.play().catch(() => {});
                 }
-                document.querySelectorAll('video').forEach(v => v.pause());
             }
 
             // Background Music Management
@@ -1158,6 +1292,7 @@ Someone wishing you a wonderful year ahead. 💗
                     const fallback = card.querySelector('.media-fallback');
                     
                     const audio = new Audio(src);
+                    activeVoiceAudios.push(audio);
                     
                     audio.addEventListener('error', () => {
                         fallback.style.display = 'block';
@@ -1177,7 +1312,7 @@ Someone wishing you a wonderful year ahead. 💗
 
                     btn.addEventListener('click', () => {
                         if (audio.paused) {
-                            pauseAllMedia();
+                            pauseAllSceneMedia();
                             if (musicEnabled && bgMusic) bgMusic.pause();
                             audio.play().then(() => {
                                 activeAudio = audio;
@@ -1210,7 +1345,7 @@ Someone wishing you a wonderful year ahead. 💗
 
                 cutBtn.addEventListener('click', () => {
                     cake.classList.add('cut');
-                    cakeCount = true;
+                    cakeCut = true;
                     msg.textContent = "May this new chapter bring you more laughter, more love, and a thousand beautiful reasons to smile. 💗";
                     msg.style.display = 'block';
                     triggerConfettiBurst(0.8);
@@ -1234,7 +1369,7 @@ Someone wishing you a wonderful year ahead. 💗
             function initScene08() {
                 document.querySelectorAll('#scene-08 video').forEach(video => {
                     video.addEventListener('play', () => {
-                        pauseAllMedia();
+                        pauseAllSceneMedia();
                         if (musicEnabled && bgMusic) bgMusic.pause();
                         video.play();
                     });
@@ -1271,9 +1406,42 @@ Someone wishing you a wonderful year ahead. 💗
                 const fill = card.querySelector('.progress-bar-fill');
                 const barContainer = card.querySelector('.progress-bar-container');
                 const fallback = card.querySelector('.media-fallback');
+                
+                const wishJarBtn = document.getElementById('draw-wish-jar-btn');
+                const wishScrollArea = document.getElementById('wish-scroll-area');
+                const wishInput = document.getElementById('user-wish-input');
                 const finaleBtn = document.getElementById('finale-btn');
+                const wishDisplayCard = document.getElementById('wish-display');
+                const wishTextOutput = document.getElementById('wish-text-output');
+
+                // Render Wish Jar Content
+                function renderWishJar() {
+                    wishScrollArea.innerHTML = '';
+                    if (wishJarData.length === 0) {
+                        wishScrollArea.innerHTML = '<div class="empty-wish-notice">The wish jar is ready for new wishes! Be the first to add one below. ✨</div>';
+                        return;
+                    }
+                    wishJarData.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'wish-card-item';
+                        div.innerHTML = `<div class="wish-author">${item.author}</div><div class="wish-body">${item.wish}</div>`;
+                        wishScrollArea.appendChild(div);
+                    });
+                }
+                renderWishJar();
+
+                wishJarBtn.addEventListener('click', () => {
+                    triggerConfettiBurst(0.5);
+                    if (wishJarData.length === 0) {
+                        alert("The wish jar is waiting for its very first wish! Type a wish below to fill it up. 🫙✨");
+                    } else {
+                        const randomWish = wishJarData[Math.floor(Math.random() * wishJarData.length)];
+                        alert(`✨ Wish from ${randomWish.author}:\n\n"${randomWish.wish}"`);
+                    }
+                });
 
                 const audio = new Audio(src);
+                activeVoiceAudios.push(audio);
 
                 audio.addEventListener('error', () => {
                     fallback.style.display = 'block';
@@ -1293,7 +1461,7 @@ Someone wishing you a wonderful year ahead. 💗
 
                 btn.addEventListener('click', () => {
                     if (audio.paused) {
-                        pauseAllMedia();
+                        pauseAllSceneMedia();
                         if (musicEnabled && bgMusic) bgMusic.pause();
                         audio.play().then(() => {
                             activeAudio = audio;
@@ -1317,6 +1485,18 @@ Someone wishing you a wonderful year ahead. 💗
                 });
 
                 finaleBtn.addEventListener('click', () => {
+                    const wishText = wishInput.value.trim();
+                    if (wishText !== "") {
+                        wishTextOutput.textContent = `"${wishText}"`;
+                        // Dynamically append user wish to Wish Jar list
+                        wishJarData.push({ author: "Luci (Birthday Queen)", wish: wishText });
+                        renderWishJar();
+                    } else {
+                        wishTextOutput.textContent = `"May all your quiet wishes come true in this new year! ✨"`;
+                    }
+                    wishDisplayCard.style.display = 'block';
+
+                    // Multi-stage celebratory confetti
                     triggerConfettiBurst(2.0);
                     setTimeout(() => triggerConfettiBurst(1.5), 400);
                     setTimeout(() => triggerConfettiBurst(1.0), 800);
